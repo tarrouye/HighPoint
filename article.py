@@ -5,13 +5,16 @@ from textblob import TextBlob
 err_file = "err.txt"
 
 class Article:
-    def __init__(self, url = "", parsed = False, analyzed = "False", title = "", author = "", body = ""):
+    def __init__(self, url = "", parsed = False, analyzed = False, title = "", author = "", body = "", sentiment = None, polarity = None, subjectivity = None):
         self.url = url
         self.title = title
         self.author = author
         self.body = body
         self.parsed = parsed
         self.analyzed = analyzed
+        self.sentiment = sentiment
+        self.polarity = polarity
+        self.subjectivity = subjectivity
 
     def parse(self):
         paragraphtext = []
@@ -74,7 +77,10 @@ class Article:
         # analyze the body for polarity and subjectivity
         if self.parsed == True:
             textBlobObj = TextBlob(self.body)
-            self.analyzed = textBlobObj.sentiment
+            self.sentiment = textBlobObj.sentiment
+            self.polarity = textBlobObj.sentiment.polarity
+            self.subjectivity = textBlobObj.sentiment.subjectivity
+            self.analyzed = True
     
     def __str__(self):
         return "URL: " + self.url + "\nParsed: " + str(self.parsed) + "\nAnalyzed: " + str(self.analyzed) + "\nTitle: " + self.title + "\nAuthor: " + self.author + "\nBody: " + self.body
