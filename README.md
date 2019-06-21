@@ -17,6 +17,9 @@ LINUX:
 4) Install requests
 `pip3 install requests`
 
+5) Install googlefinance.client 1.3.0
+`pip3 install googlefinance.client`
+
 WINDOWS:
 
 1) Install Python3 and Pip
@@ -30,3 +33,6 @@ https://www.python.org/downloads/windows/
 
 4) Install requests
 `pip install requests`
+
+5) Install googlefinance.client 1.3.0
+`pip install googlefinance.client`
