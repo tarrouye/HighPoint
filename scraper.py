@@ -12,7 +12,7 @@ class GoogleScraper:
     def __init__(self, portfolio = Portfolio(), start = "2019", end = "2019-09-20", max = 25):
         self.search_after = start
         self.search_before = end
-        self.output_filename = 'out-' + start + end + ".txt"
+        self.output_filename = 'out-' + start + "--" + end + ".txt"
         self.url_filename = 'urls.txt'
         self.max_articles_per_term = max
         
