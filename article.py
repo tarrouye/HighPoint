@@ -4,14 +4,13 @@ from bs4 import BeautifulSoup
 err_file = "err.txt"
 
 class Article:
-    def __init__(self, url):
+    def __init__(self, url = "", parsed = False, analyzed = False, title = "", author = "", body = ""):
         self.url = url
-        self.title = ""
-        self.author = ""
-        self.body = ""
-        self.parsed = False
-        self.analyzed = False
-    
+        self.title = title
+        self.author = author
+        self.body = body
+        self.parsed = parsed
+        self.analyzed = analyzed
 
     def parse(self):
         paragraphtext = []
@@ -40,16 +39,17 @@ class Article:
         self.author = aname
     
         # get article title
-        self.title = ""
         try:
-            self.title = soup.title.get_text()
+            title = soup.title.get_text()
         except:
+            title = ""
             f = open(err_file, "a")
             print("URL: " + self.url, file=f)
             print("Error: Title Not Found", file=f)
             f.close()
             print("Title-less article logged in error file.")
-            
+        self.title = title
+        
         # get article text
         try:
             articletext = soup.find(id='article-body').find_all('p')
@@ -72,7 +72,7 @@ class Article:
         print("Parsed article: " + self.title)
     
     def __str__(self):
-        return "URL: " + self.url + "\nParsed: " + str(self.parsed) + "\nTitle: " + self.title + "\nAuthor: " + self.author + "\nBody: " + self.body
+        return "URL: " + self.url + "\nParsed: " + str(self.parsed) + "\nAnalyzed: " + str(self.analyzed) + "\nTitle: " + self.title + "\nAuthor: " + self.author + "\nBody: " + self.body
 
     def output(self, fn):
         if (self.parsed):
