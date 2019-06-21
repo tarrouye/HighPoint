@@ -5,49 +5,24 @@ search_news = googlesearch.search_news
 
 from article import Article
 from company import Company
+from portfolio import Portfolio
 
 
 class GoogleScraper:
-    def __init__(self, company_file = "companies.txt", start = "2019", end = "2019-09-20", max = 25):
-        self.company_file = company_file
+    def __init__(self, portfolio = Portfolio(), start = "2019", end = "2019-09-20", max = 25):
         self.search_after = start
         self.search_before = end
         self.output_filename = 'out-' + start + end + ".txt"
         self.url_filename = 'urls.txt'
         self.max_articles_per_term = max
-    
-        # create companies dictionary from file
-        self.companies = {}
         
-        cp = open(company_file, "r")
-        line = cp.readline()
-        while (line):
-            parts = line.split(">")
-            if len(parts) > 1:
-                id_ = parts[0].strip(" ")
-                name = parts[1].strip(" ")
-                stock = parts[2].strip(" ")
-                terms = []
-                for term in parts[3].split(","):
-                    term = term.strip(" ")
-                    term = term.strip("\n")
-                    if (term != ""):
-                        terms.append(term)
-                blocked = []
-                for block in parts[4].split(","):
-                    block = block.strip(" ")
-                    block = block.strip("\n")
-                    if (block != ""):
-                        blocked.append(block)
-                self.companies.update({id_ : Company(name, stock, terms, blocked)})
-            line = cp.readline()
-        cp.close()
+        self.portfolio = portfolio
     
-        # create used_url list from file
+        # create used_url list from file in portfolio
         #print("URLS already considered: ")
         self.used_urls = []
         try:
-            up = open(url_filename, "r")
+            up = open(self.portfolio.url_filename, "r")
             line = up.readline()
             while (line):
                 self.used_urls.append(line.strip("\n"))
@@ -63,8 +38,8 @@ class GoogleScraper:
     
     def scrape(self):
         # check out the company list and populate article list
-        for cID in self.companies:
-            company = self.companies[cID]
+        for cID in self.portfolio.companies:
+            company = self.portfolio.companies[cID]
             print(company.name + ":", end = " ")
             for term in company.search_terms:
                 print(term, end = ", ")
