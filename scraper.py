@@ -74,3 +74,34 @@ class GoogleScraper:
                         print("URL has already been considered.")
                     print()
                 print()
+
+
+import matplotlib.pyplot as plt
+import quandl
+
+class StockScraper:
+    def __init__(self, portfolio = Portfolio(), start = "2016-01-01", end = "2018-01-01"):
+        self.search_after = start
+        self.search_before = end
+        self.portfolio = portfolio
+        self.output_filename = 'out-stock-' + start + "to" + end + ".txt"
+        
+        self.stocks = []
+    
+    def scrape(self):
+        f = open(self.output_filename, "w")
+        # check out the company list and populate stock list
+        for cID in self.portfolio.companies:
+            company = self.portfolio.companies[cID]
+            
+            data = quandl.get(company.stock_symbol, start_date = self.search_after, end_date = self.search_before)
+            print("Company: " + company.name, file=f)
+            print(data, file=f)
+            print("----------------", file=f)
+            print("", file=f)
+            print("Saved stock data for " + company.name + " to output file.")
+            self.stocks.append(data)
+            data.Close.plot()
+            plt.show()
+        
+        f.close()
