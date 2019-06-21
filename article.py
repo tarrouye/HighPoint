@@ -16,19 +16,20 @@ class Article:
         paragraphtext = []
         # get page text and parse with BFS
         print("requesting page")
+        # catch timeout errors and other request exceptions
         try:
-            page = requests.get(self.url, timeout=30)
+            page = requests.get(self.url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=30)
         except requests.exceptions.RequestException as e:
-            print(e)
-            f = open(err_file, "a")
-            print("URL: " + self.url, file=f)
-            print("Error: " + str(e), file=f)
-            f.close()
-            print("Unparsed article logged in error file.")
+            self.logerror(str(e))
             return
-
+        
+        # catch 404 errors
+        if page.status_code == 404:
+            self.logerror("404 On Request")
+            return
+            
         soup = BeautifulSoup(page.text, 'html.parser')
-    
+        
         # get author name, if there's a named author
         # currently works on MarketWatch
         try:
@@ -36,18 +37,16 @@ class Article:
             aname = abody.get_text()
         except:
             aname = 'Anonymous'
+            
         self.author = aname
-    
-        # get article title
+        
+        # get article title or log error
         try:
             title = soup.title.get_text()
         except:
             title = ""
-            f = open(err_file, "a")
-            print("URL: " + self.url, file=f)
-            print("Error: Title Not Found", file=f)
-            f.close()
-            print("Title-less article logged in error file.")
+            self.logerror("Title Not Found")
+            
         self.title = title
         
         # get article text
@@ -59,7 +58,7 @@ class Article:
             except:
                 print("Could not narrow down body location")
                 articletext = soup.find_all('p')
-    
+                
         # combine text
         for paragraph in articletext:
             paragraphtext.append(paragraph.get_text())
@@ -73,7 +72,7 @@ class Article:
     
     def __str__(self):
         return "URL: " + self.url + "\nParsed: " + str(self.parsed) + "\nAnalyzed: " + str(self.analyzed) + "\nTitle: " + self.title + "\nAuthor: " + self.author + "\nBody: " + self.body
-
+        
     def output(self, fn):
         if (self.parsed):
             f = open(fn, "a")
@@ -81,3 +80,12 @@ class Article:
             print("", file=f)
             f.close()
             print("Article saved to text file: " + self.title)
+    
+    def logerror(self, error):
+        f = open(err_file, "a")
+        print("URL: " + self.url, file=f)
+        print("Error: " + error, file=f)
+        print("", file=f)
+        f.close()
+        print(error + " logged in error file.")
+        
