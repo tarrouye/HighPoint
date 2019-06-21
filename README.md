@@ -36,3 +36,11 @@ https://www.python.org/downloads/windows/
 
 5) Install googlefinance.client 1.3.0
 `pip install googlefinance.client`
+
+
+GoogleSearch Documentation:
+https://python-googlesearch.readthedocs.io/en/latest/
+
+
+GoogleFinanceClient Documentation:
+https://pypi.org/project/googlefinance.client/
