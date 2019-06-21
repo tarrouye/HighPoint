@@ -17,8 +17,8 @@ LINUX:
 4) Install requests
 `pip3 install requests`
 
-5) Install yfinance 0.1.43
-`pip3 install yfinance`
+5) Install Quandl
+`pip3 install quandl`
 
 6) Install matplotlib 3.1.0
 `pip3 install matplotlib`
@@ -40,8 +40,8 @@ https://www.python.org/downloads/windows/
 4) Install requests
 `pip install requests`
 
-5) Install yfinance 0.1.43
-`pip install yfinance`
+5) Install Quandl
+`pip install quandl`
 
 6) Install matplotlib 3.1.0
 `pip install matplotlib`
@@ -51,5 +51,5 @@ GoogleSearch Documentation:
 https://python-googlesearch.readthedocs.io/en/latest/
 
 
-yFinance Documentation:
-https://pypi.org/project/yfinance/
+Quandl Documentation:
+https://www.quandl.com/tools/python
