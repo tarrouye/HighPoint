@@ -1,5 +1,5 @@
 from scraper import GoogleScraper
 from portfolio import Portfolio
 
-goog = GoogleScraper(start = "2018-10-22", end = "2018-10-29")
+goog = GoogleScraper(start = "2019-06-01", end = "2019-06-02")
 goog.scrape()
