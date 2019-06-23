@@ -1,20 +1,23 @@
 import requests
 from bs4 import BeautifulSoup
 from textblob import TextBlob
+import csv
 
 err_file = "err.txt"
 
 class Article:
     def __init__(self, url = "", parsed = False, analyzed = False, sentiment = None, polarity = None, subjectivity = None, title = "", author = "", body = ""):
-        self.url = url
-        self.title = title
-        self.author = author
-        self.body = body
-        self.parsed = parsed
-        self.analyzed = analyzed
-        self.sentiment = sentiment
-        self.polarity = polarity
-        self.subjectivity = subjectivity
+        self.dictionary = {
+            'url': url,
+            'title': title,
+            'author': author,
+            'body': body,
+            'parsed': parsed,
+            'analyzed': analyzed,
+            'sentiment': sentiment,
+            'polarity': polarity,
+            'subjectivity': subjectivity
+        }
 
     def parse(self):
         paragraphtext = []
@@ -22,7 +25,7 @@ class Article:
         print("requesting page")
         # catch timeout errors and other request exceptions
         try:
-            page = requests.get(self.url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=30)
+            page = requests.get(self.dictionary['url'], headers={'User-Agent': 'Mozilla/5.0'}, timeout=30)
         except requests.exceptions.RequestException as e:
             self.logerror(str(e))
             return
@@ -42,7 +45,7 @@ class Article:
         except:
             aname = 'Anonymous'
             
-        self.author = aname
+        self.dictionary['author'] = aname.strip("\n").strip(" ").strip("\t")
         
         # get article title or log error
         try:
@@ -51,7 +54,7 @@ class Article:
             title = ""
             self.logerror("Title Not Found")
             
-        self.title = title
+        self.dictionary['title'] = title.strip("\n").strip(" ").strip("\t")
         
         # get article text
         try:
@@ -68,44 +71,62 @@ class Article:
             paragraphtext.append(paragraph.get_text())
             
         # combine all paragraphs into the body
-        self.body = "".join(paragraphtext)
-        self.body = " ".join(self.body.split()) #removes excessive whitespaces
-        self.parsed = True
+        self.dictionary['body'] = "".join(paragraphtext)
+        self.dictionary['body'] = " ".join(self.dictionary['body'].split()) #removes excessive whitespaces
+        self.dictionary['body'] = self.dictionary['body'].strip("\n").strip(" ").strip("\t")
+        self.dictionary['parsed'] = True
         
-        print("Parsed article: " + self.title)
+        print("Parsed article: " + self.dictionary['title'])
 
         # analyze the body for polarity and subjectivity
-        if self.parsed == True:
-            textBlobObj = TextBlob(self.body)
-            self.sentiment = textBlobObj.sentiment
-            self.polarity = textBlobObj.sentiment.polarity
-            self.subjectivity = textBlobObj.sentiment.subjectivity
-            self.analyzed = True
+        if self.dictionary['parsed'] == True:
+            textBlobObj = TextBlob(self.dictionary['body'])
+            self.dictionary['sentiment'] = textBlobObj.sentiment
+            self.dictionary['polarity'] = textBlobObj.sentiment.polarity
+            self.dictionary['subjectivity'] = textBlobObj.sentiment.subjectivity
+            self.dictionary['analyzed'] = True
     
     def __str__(self):
-        return ("URL: " + self.url + 
-            "\nParsed: " + str(self.parsed) + 
-            "\nAnalyzed: " + str(self.analyzed) + 
-            "\nSentiment: " + str(self.sentiment) + 
-            "\nPolarity: " + str(self.polarity) + 
-            "\nSubjectivity: " + str(self.subjectivity) + 
-            "\nTitle: " + self.title + 
-            "\nAuthor: " + self.author + 
-            "\nBody: " + self.body)
-        
+        return ("URL: " + self.dictionary['url'] +
+            "\nParsed: " + str(self.dictionary['parsed']) +
+            "\nAnalyzed: " + str(self.dictionary['analyzed']) +
+            "\nSentiment: " + str(self.dictionary['sentiment']) +
+            "\nPolarity: " + str(self.dictionary['polarity']) +
+            "\nSubjectivity: " + str(self.dictionary['subjectivity']) +
+            "\nTitle: " + self.dictionary['title'] +
+            "\nAuthor: " + self.dictionary['author'] +
+            "\nBody: " + self.dictionary['body'])
+    
     def output(self, fn):
-        if (self.parsed):
-            f = open(fn, "a")
-            print(self, file=f)
-            print("", file=f)
-            f.close()
-            print("Article saved to text file: " + self.title)
+        if (self.dictionary['parsed']):
+            if (file_is_empty(fn)): # if the file is empty, we must add our csv header
+                f = open(fn, "w")
+                print("URL,Parsed,Analyzed,Sentiment,Polarity,Subjectivity,Title,Author,Body", file=f)
+                f.close()
+            
+            writeFile = open(fn, 'a')
+            csv.writer(writeFile).writerow([self.dictionary['url'], str(self.dictionary['parsed']), str(self.dictionary['analyzed']), str(self.dictionary['sentiment']), str(self.dictionary['polarity']),
+                    str(self.dictionary['subjectivity']), self.dictionary['title'], self.dictionary['author'], self.dictionary['body']])
+                    
+            writeFile.close()
+            print("Article saved to csv file: " + self.dictionary['title'])
+            
+            
     
     def logerror(self, error):
         f = open(err_file, "a")
-        print("URL: " + self.url, file=f)
+        print("URL: " + self.dictionary['url'], file=f)
         print("Error: " + error, file=f)
         print("", file=f)
         f.close()
         print(error + " logged in error file.")
         
+
+
+def file_is_empty(path):
+    try:
+        f = open(path, "r")
+        f.close()
+        return False
+    except:
+        return True

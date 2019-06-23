@@ -1,9 +1,10 @@
 from company import Company
 
 class Portfolio:
-    def __init__(self, company_file = "companies.txt", url_fn = "urls.txt"):
+    def __init__(self, company_file = "companies.txt", url_fn = "urls.txt", id_ = 'p0001'):
         self.url_filename = url_fn
         self.company_file = company_file
+        self.id = id_
         
         
         # create companies dictionary from file
