@@ -26,6 +26,9 @@ LINUX:
 7) Install tKinter
 `sudo apt-get install python3-tk`
 
+8) Install pandas
+`pip3 install pandas`
+
 WINDOWS:
 
 1) Install Python3 and Pip
@@ -46,6 +49,9 @@ https://www.python.org/downloads/windows/
 6) Install matplotlib 3.1.0
 `pip install matplotlib`
 
+7) Install pandas
+`pip install pandas`
+
 
 GoogleSearch Documentation:
 https://python-googlesearch.readthedocs.io/en/latest/
@@ -53,3 +59,6 @@ https://python-googlesearch.readthedocs.io/en/latest/
 
 Quandl Documentation:
 https://www.quandl.com/tools/python
+
+Pandas Documentation:
+http://pandas.pydata.org/pandas-docs/stable/
