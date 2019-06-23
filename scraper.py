@@ -12,7 +12,7 @@ class GoogleScraper:
     def __init__(self, portfolio = Portfolio(), start = "2019", end = "2019-09-20", max = 25):
         self.search_after = start
         self.search_before = end
-        self.output_filename = 'out-' + start + "--" + end + ".txt"
+        self.output_filename = 'out-id' + portfolio.id + "-" + start + "to" + end + ".csv"
         self.url_filename = 'urls.txt'
         self.max_articles_per_term = max
         
@@ -78,30 +78,44 @@ class GoogleScraper:
 
 import matplotlib.pyplot as plt
 import quandl
+import pandas
 
 class StockScraper:
     def __init__(self, portfolio = Portfolio(), start = "2016-01-01", end = "2018-01-01"):
         self.search_after = start
         self.search_before = end
         self.portfolio = portfolio
-        self.output_filename = 'out-stock-' + start + "to" + end + ".txt"
+        self.output_filename = 'out-stock-id' + portfolio.id + "-" + start + "to" + end + ".csv"
         
         self.stocks = []
+        self.data_frame = pandas.DataFrame()
     
     def scrape(self):
-        f = open(self.output_filename, "w")
         # check out the company list and populate stock list
         for cID in self.portfolio.companies:
             company = self.portfolio.companies[cID]
             
+            #get stock data from Quandl
             data = quandl.get(company.stock_symbol, start_date = self.search_after, end_date = self.search_before)
-            print("Company: " + company.name, file=f)
-            print(data, file=f)
-            print("----------------", file=f)
-            print("", file=f)
-            print("Saved stock data for " + company.name + " to output file.")
+            
+            #create output filename for this portfolio/company/date combo
+            comp_out = 'out-stock-id' + self.portfolio.id + "-comp-" + company.name + "-" + self.search_after + "to" + self.search_before + ".csv"
+            
+            #export stock data to csv file
+            export = data.to_csv(comp_out, header = True)
+            print("Saved stock data for " + company.name + " to csv file.")
+            
+            #add stock data to our list
             self.stocks.append(data)
+            
+            #add this file to our data_frame
+            df2 = {'company': company.name, 'csvfile': comp_out}
+            self.data_frame = self.data_frame.append(df2, ignore_index=True)
+            
+            #show plot of this stock data
             data.Close.plot()
             plt.show()
         
-        f.close()
+        #export list of csv files to main portfolio/date csv file
+        self.data_frame.to_csv(self.output_filename, header = True, index = None)
+        print("Saved csv files for " + self.portfolio.id + " to main output file.")
