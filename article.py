@@ -5,7 +5,7 @@ from textblob import TextBlob
 err_file = "err.txt"
 
 class Article:
-    def __init__(self, url = "", parsed = False, analyzed = False, title = "", author = "", body = "", sentiment = None, polarity = None, subjectivity = None):
+    def __init__(self, url = "", parsed = False, analyzed = False, sentiment = None, polarity = None, subjectivity = None, title = "", author = "", body = ""):
         self.url = url
         self.title = title
         self.author = author
@@ -83,7 +83,15 @@ class Article:
             self.analyzed = True
     
     def __str__(self):
-        return "URL: " + self.url + "\nParsed: " + str(self.parsed) + "\nAnalyzed: " + str(self.analyzed) + "\nTitle: " + self.title + "\nAuthor: " + self.author + "\nBody: " + self.body
+        return ("URL: " + self.url + 
+            "\nParsed: " + str(self.parsed) + 
+            "\nAnalyzed: " + str(self.analyzed) + 
+            "\nSentiment: " + str(self.sentiment) + 
+            "\nPolarity: " + str(self.polarity) + 
+            "\nSubjectivity: " + str(self.subjectivity) + 
+            "\nTitle: " + self.title + 
+            "\nAuthor: " + self.author + 
+            "\nBody: " + self.body)
         
     def output(self, fn):
         if (self.parsed):
