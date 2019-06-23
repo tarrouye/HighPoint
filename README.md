@@ -3,60 +3,17 @@ HighPoint Sentiment Analysis
 
 How to get up and running:
 
-LINUX: 
-
-1) Install Python3
-`sudo apt-get install python3`
-
-2) Install Pip3
-`sudo apt install python3-pip`
-
-3) Install googlesearch 2.0.2
-`pip3 install google`
-
-4) Install requests
-`pip3 install requests`
-
-5) Install Quandl
-`pip3 install quandl`
-
-6) Install matplotlib 3.1.0
-`pip3 install matplotlib`
-
-7) Install tKinter
-`sudo apt-get install python3-tk`
-
-8) Install pandas
-`pip3 install pandas`
-
-9) Install TextBlob
-`pip3 install textblob`
-
-WINDOWS:
-
-1) Install Python3 and Pip
-https://www.python.org/downloads/windows/
-
-2) Add the commands to your PATH 
-`setx PATH "%PATH%;C:\Python3\Scripts"`
-
-3) Install googlesearch 2.02
-`pip install google`
-
-4) Install requests
-`pip install requests`
-
-5) Install Quandl
-`pip install quandl`
-
-6) Install matplotlib 3.1.0
-`pip install matplotlib`
-
-7) Install pandas
-`pip install pandas`
-
-8) Install TextBlob
-`pip install textblob`
+| LINUX                                                      | WINDOWS                                                                       |
+|------------------------------------------------------------|-------------------------------------------------------------------------------|
+| 1) Install Python3 <br/>`sudo apt-get install python3`     | 1) Install Python3 and Pip <br/>https://www.python.org/downloads/windows/     |
+| 2) Install Pip3 <br/>`sudo apt install python3-pip`        | 2) Add the commands to your PATH <br/>`setx PATH "%PATH%;C:\Python3\Scripts"` |
+| 3) Install googlesearch 2.0.2 <br/>`pip3 install google`   | 3) Install googlesearch 2.02 <br/>`pip install google`                        |
+| 4) Install requests <br/>`pip3 install requests`           | 4) Install requests <br/>`pip install requests`                               |
+| 5) Install Quandl <br/>`pip3 install quandl`               | 5) Install Quandl <br/>`pip install quandl`                                   |
+| 6) Install matplotlib 3.1.0 <br/>`pip3 install matplotlib` | 6) Install matplotlib 3.1.0 <br/>`pip install matplotlib`                     |
+| 7) Install tKinter <br/>`sudo apt-get install python3-tk`  | 7) ?? tKinkter for Windows                                                     |
+| 8) Install pandas <br/>`pip3 install pandas`               | 8) Install pandas <br/>`pip install pandas`                                   |
+| 9) Install TextBlob <br/>`pip3 install textblob`           | 9) Install TextBlob <br/>`pip install textblob`                               |
 
 GoogleSearch Documentation:
 https://python-googlesearch.readthedocs.io/en/latest/
