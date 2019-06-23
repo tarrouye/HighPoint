@@ -29,6 +29,9 @@ LINUX:
 8) Install pandas
 `pip3 install pandas`
 
+9) Install TextBlob
+`pip3 install textblob`
+
 WINDOWS:
 
 1) Install Python3 and Pip
@@ -52,6 +55,8 @@ https://www.python.org/downloads/windows/
 7) Install pandas
 `pip install pandas`
 
+8) Install TextBlob
+`pip install textblob`
 
 GoogleSearch Documentation:
 https://python-googlesearch.readthedocs.io/en/latest/
@@ -60,5 +65,10 @@ https://python-googlesearch.readthedocs.io/en/latest/
 Quandl Documentation:
 https://www.quandl.com/tools/python
 
+
 Pandas Documentation:
 http://pandas.pydata.org/pandas-docs/stable/
+
+
+TextBlob Documentation:
+https://textblob.readthedocs.io/en/dev/
