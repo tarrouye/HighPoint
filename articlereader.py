@@ -7,17 +7,6 @@ class ArticleReader:
         self.articles = []
         self.parsed = False
         self.parse(file)
-    
-    '''def parse(self, file):
-        f = open(file, "r")
-        text = f.read()
-        f.close()
-        matches = re.findall("URL: (.*)\nParsed: (.*)\nAnalyzed: (.*)\nSentiment: (.*)\nPolarity: (.*)\nSubjectivity: (.*)\nTitle: (.*)\nAuthor: (.*)\nBody: (.*)\n", text)
-        
-        for match in matches:
-            self.articles.append(Article(match[0], match[1], match[2], match[3], match[4], match[5], match[6], match[7], match[8]))
-        
-        self.parsed = True'''
         
     def parse(self, file):
         try:
