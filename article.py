@@ -39,11 +39,5 @@ class Article:
         writeFile.close()
         print("Article saved to csv file: " + self.dictionary['title'])
 
-
-def file_is_empty(path):
-    try:
-        f = open(path, "r")
-        f.close()
-        return False
-    except:
-        return True
+# cyclical imports ;/
+from utility import file_is_empty
