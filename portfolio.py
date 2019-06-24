@@ -1,35 +1,10 @@
 from company import Company
+from utility import companies_from_csv
 
 class Portfolio:
-    def __init__(self, company_file = "companies.txt", url_fn = "urls.txt", id_ = 'p0001'):
+    def __init__(self, company_file = "companies.csv", url_fn = "urls.txt", id_ = 'p0001'):
         self.url_filename = url_fn # the filename where previously viewed urls are stored
         self.company_file = company_file
         self.id = id_
         
-        
-        # create companies dictionary from file
-        self.companies = {}
-        
-        cp = open(company_file, "r")
-        line = cp.readline()
-        while (line):
-            parts = line.split(">")
-            if len(parts) > 1:
-                id_ = parts[0].strip(" ")
-                name = parts[1].strip(" ")
-                stock = parts[2].strip(" ")
-                terms = []
-                for term in parts[3].split(","):
-                    term = term.strip(" ")
-                    term = term.strip("\n")
-                    if (term != ""):
-                        terms.append(term)
-                blocked = []
-                for block in parts[4].split(","):
-                    block = block.strip(" ")
-                    block = block.strip("\n")
-                    if (block != ""):
-                        blocked.append(block)
-                self.companies.update({id_ : Company(name, stock, terms, blocked)})
-            line = cp.readline()
-        cp.close()
+        self.companies = companies_from_csv(company_file)

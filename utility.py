@@ -46,6 +46,30 @@ def stocks_from_csv(file):
     
     return stocks
 
+# takes the filename of a csv file of company data and converts
+# it to a dictionary of Company objects
+def companies_from_csv(file):
+    try:
+        readFile = open(file, 'r')
+    except:
+        print("Invalid file passed to Company reader.") # try except block protects against invalid filenames
+        return
+    
+    companies = {} # dictionary to hold the Company objects
+    
+    csvreader = csv.reader(readFile) # create a cvs reader object
+    
+    next(csvreader) # skip the header
+    for match in csvreader: # go through each row of the cvs file
+        # create the Company and add it to the list
+        terms = list(map(str.strip, match[3].split(",")))
+        blocks = list(map(str.strip, match[4].split(",")))
+        companies.update({match[0] : Company(match[1], match[2], terms, blocks)})
+    
+    readFile.close() # close the file ;)
+    
+    return companies
+
 
 # converts a date string to a datetime object using pandas
 def str_to_datetime(str_):
@@ -66,3 +90,4 @@ def file_is_empty(path):
         
 # cyclical imports ;/
 from article import Article
+from company import Company
