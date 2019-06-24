@@ -11,8 +11,11 @@ import pandas
 # read in the Articles from the csv file
 articles = articles_from_csv("out-idtsla-2016-01-01to2018-01-01.csv")
 
-# read in our Stock data
-stock_data = stocks_from_csv("out-stock-idtsla-comp-Tesla-2016-01-01to2018-01-01.csv")
+# read in our percent Stock data
+stock_data_per = stocks_from_csv("out-percent-stock-idtsla-comp-Tesla-2016-01-01to2018-01-01.csv")
+
+# read in our daily Stock data
+stock_data_day = stocks_from_csv("out-daily-stock-idtsla-comp-Tesla-2016-01-01to2018-01-01.csv")
 
 # populate a list with the contents of the article
 data_list = []
@@ -30,5 +33,6 @@ plt.figure(1)
 plt.plot(df['publish-date'], df['polarity'], 'b-')
 plt.plot(df['publish-date'], df['subjectivity'], 'r-')
 
-plt.plot(stock_data['Close'] * 6, 'g-')
+plt.plot(stock_data_per['Close'] * 6, 'g-')
+plt.plot(stock_data_day['Close'] / 400 - 0.5, 'm-')
 plt.show()

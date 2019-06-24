@@ -171,32 +171,33 @@ class StockScraper:
         self.search_before = end
         self.portfolio = portfolio
         self.output_filename = 'out-stock-id' + portfolio.id + "-" + start + "to" + end + ".csv"
-        
-        self.stocks = []
-        self.data_frame = pandas.DataFrame()
     
     def scrape(self):
+        data_frame = pandas.DataFrame()
+        
         # check out the company list and populate stock list
         for cID in self.portfolio.companies:
             company = self.portfolio.companies[cID]
             
-            #get stock data from Quandl
-            data = quandl.get(company.stock_symbol, transform="rdiff", start_date = self.search_after, end_date = self.search_before)
+            #get daily stock data from Quandl
+            data = quandl.get(company.stock_symbol, start_date = self.search_after, end_date = self.search_before)
             
-            #create output filename for this portfolio/company/date combo
-            comp_out = 'out-stock-id' + self.portfolio.id + "-comp-" + company.name + "-" + self.search_after + "to" + self.search_before + ".csv"
+            #get percentage change stock data from Quandl
+            data2 = quandl.get(company.stock_symbol, transform="rdiff", start_date = self.search_after, end_date = self.search_before)
+            
+            #create output filenames for this portfolio/company/date combo
+            comp_out = 'out-daily-stock-id' + self.portfolio.id + "-comp-" + company.name + "-" + self.search_after + "to" + self.search_before + ".csv"
+            comp_out_2 = 'out-percent-stock-id' + self.portfolio.id + "-comp-" + company.name + "-" + self.search_after + "to" + self.search_before + ".csv"
             
             #export stock data to csv file
             export = data.to_csv(comp_out, header = True)
+            export2 = data2.to_csv(comp_out_2, header = True)
             print("Saved stock data for " + company.name + " to csv file.")
             
-            #add stock data to our list
-            self.stocks.append(data)
-            
             #add this file to our data_frame
-            df2 = {'company': company.name, 'csvfile': comp_out}
-            self.data_frame = self.data_frame.append(df2, ignore_index=True)
+            df2 = {'company': company.name, 'daily file': comp_out, 'percent file': comp_out_2}
+            data_frame = data_frame.append(df2, ignore_index=True)
         
         #export list of csv files to main portfolio/date csv file
-        self.data_frame.to_csv(self.output_filename, header = True, index = None)
+        data_frame.to_csv(self.output_filename, header = True, index = None)
         print("Saved csv files for " + self.portfolio.id + " to main output file.")
