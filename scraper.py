@@ -17,7 +17,10 @@ nltk.download("punkt")
 
 from datetime import datetime
 
+import csv
+
 from utility import str_to_datetime
+from utility import file_is_empty
 
 import articleDateExtractor as getdate
 
@@ -25,7 +28,7 @@ from article import Article
 from company import Company
 from portfolio import Portfolio
 
-err_file = "err.txt"
+err_file = "err.csv"
 
 class GoogleScraper:
     def __init__(self, portfolio = Portfolio(), start = "2019", end = "2019-09-20", max = 25):
@@ -151,11 +154,16 @@ class GoogleScraper:
         self.articles.append(this_article) # add to our list
         
     def logerror(self, url, error):
-        f = open(err_file, "a")
-        print("URL: " + url, file=f)
-        print("Error: " + error, file=f)
-        print("", file=f)
-        f.close()
+        if (file_is_empty(err_file)): # if the file is empty, we must add our csv header
+            f = open(err_file, "w")
+            print("URL,Error", file=f)
+            f.close()
+        
+        writeFile = open(err_file, 'a', encoding='utf-8')
+        csv.writer(writeFile).writerow([url, error])
+        
+        writeFile.close()
+        
         print(error + " logged in error file.")
 
 
