@@ -105,8 +105,16 @@ class Article:
                 f.close()
             
             writeFile = open(fn, 'a')
-            csv.writer(writeFile).writerow([self.dictionary['url'], str(self.dictionary['parsed']), str(self.dictionary['analyzed']), str(self.dictionary['sentiment']), str(self.dictionary['polarity']),
-                    str(self.dictionary['subjectivity']), self.dictionary['title'], self.dictionary['author'], self.dictionary['body']])
+            csv.writer(writeFile,  lineterminator='\n').writerow([
+            	self.dictionary['url'], 
+            	str(self.dictionary['parsed']), 
+            	str(self.dictionary['analyzed']), 
+            	str(self.dictionary['sentiment']), 
+            	str(self.dictionary['polarity']), 
+            	str(self.dictionary['subjectivity']), 
+            	self.dictionary['title'], 
+            	self.dictionary['author'], 
+            	self.dictionary['body']])
                     
             writeFile.close()
             print("Article saved to csv file: " + self.dictionary['title'])
