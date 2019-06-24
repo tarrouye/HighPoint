@@ -1,32 +1,47 @@
-# import search api
+######## scraper.py ########
+
+######## GoogleScraper ########
 import googlesearch
 search = googlesearch.search
 search_news = googlesearch.search_news
+
+import requests
+
+from bs4 import BeautifulSoup
+
+from textblob import TextBlob
+
+from newspaper import Article as NewsArticle
+import nltk
+nltk.download("punkt")
+
+from datetime import datetime
+
+import articleDateExtractor as getdate
 
 from article import Article
 from company import Company
 from portfolio import Portfolio
 
+err_file = "err.txt"
 
 class GoogleScraper:
     def __init__(self, portfolio = Portfolio(), start = "2019", end = "2019-09-20", max = 25):
-        self.search_after = start
-        self.search_before = end
-        self.output_filename = 'out-id' + portfolio.id + "-" + start + "to" + end + ".csv"
-        self.url_filename = 'urls.txt'
-        self.max_articles_per_term = max
+        #setting our initial variables
+        self.search_after = start # the start of the time period to scrape
+        self.search_before = end # the end of the time period to scrape
+        self.output_filename = 'out-id' + portfolio.id + "-" + start + "to" + end + ".csv" #wack filename sorry
+        self.max_articles_per_term = max # how many articles to scrape per search term
         
-        self.portfolio = portfolio
+        self.portfolio = portfolio # the portfolio to
     
         # create used_url list from file in portfolio
-        #print("URLS already considered: ")
         self.used_urls = []
         try:
-            up = open(self.portfolio.url_filename, "r")
+            up = open(self.portfolio.url_filename, "r") # open the file
             line = up.readline()
-            while (line):
+            while (line): # go through each line, get the url, and add it to the list
                 self.used_urls.append(line.strip("\n"))
-                #print(line)
                 line = up.readline()
             up.close()
             print()
@@ -37,45 +52,104 @@ class GoogleScraper:
         self.articles = []
     
     def scrape(self):
-        # check out the company list and populate article list
+        # go through company list to scrape their search terms
         for cID in self.portfolio.companies:
             company = self.portfolio.companies[cID]
-            print(company.name + ":", end = " ")
-            for term in company.search_terms:
-                print(term, end = ", ")
-            print()
             
             print("Search Results for " + company.name + ": ")
-            for term in company.search_terms:
-                # call the google search news function and go through the urls
+            
+            for term in company.search_terms: # go through each search term
+                # call the google search news function and go through the urls it returns
                 for url in search_news(term + " after:" + self.search_after + " before:" + self.search_before, stop = self.max_articles_per_term): # we set it to get max articles per search term, between our two dates
                     url = url.strip(" ")
-                    url = url.strip("\n")
+                    url = url.strip("\n") #remove extraneous leading/trailing characters in the url
+                    
                     print(url)
-                    if not url in self.used_urls:
-                        f = open(self.url_filename, "a")
-                        print(url, file=f)
-                        f.close()
+                    
+                    if not url in self.used_urls: # we don't want to waste time looking at urls we've already dealt with
+                        f = open(self.portfolio.url_filename, "a")
+                        print(url, file=f) #add this url to the list of dealt with
+                        f.close()          #as well as to the file
                         self.used_urls.append(url)
+                        
                         print("URL saved to text file")
+                        
                         #check if url is blacklisted or should be considered
                         allow = True
                         for block in company.blacklist:
-                            if block in url:
-                                allow = False
+                            if block in url:   # run through company's url blacklist to see if this url
+                                allow = False  # is in it, in which case we end here
                                 print("URL was removed from consideration due to blacklist entry: " + block)
                                 break
-                        if allow:
-                            this_article = Article(url)
-                            this_article.parse() #parse it
-                            this_article.output(self.output_filename) #output to files
-                            self.articles.append(this_article)
+                            
+                        if allow: # if not blacklisted url, we move to parse this URL
+                            self.parseURL(url)
                     else:
                         print("URL has already been considered.")
+                        
                     print()
                 print()
+                
+    def parseURL(self, url):
+        # create Newspaper3k object
+        news3 = NewsArticle(url)
+
+        # download and parse the article
+        try:
+            news3.download()
+            news3.parse()
+        except:
+            self.logerror(url, "Download Failed") # protect from failure with a try except
+            return
+        
+        # check date / end
+        pub = news3.publish_date # try to get the date from Newspaper3k
+        access = datetime.today() # we accessed this rn
+        
+        # second date attempt if first failed
+        if (pub == None):
+            pub = getdate.extractArticlePublishedDate(url)
+            
+        # we need the date so if we cant find it we simply throw this article away
+        if (pub == None):
+            self.logerror(url, "Date Detection Failed")
+            return
+        
+        # TextBlob Analysis
+        textBlobObj = TextBlob(news3.text) # create textBlob object
+        
+        # language / end
+        try:
+            lang = textBlobObj.detect_language()
+            if (lang != 'en'):
+                return # we only want to deal with English articles
+        except:
+            self.logerror(url, "Language Detection Failed")
+            return
+            
+        # have TextBlob calculate sentiment
+        try:
+            sentiment = textBlobObj.sentiment
+        except:
+            self.logerror(url, "Sentiment Analysis Failed")
+            return
+        
+        # Add to article list
+        this_article = Article(url, sentiment, sentiment.polarity, sentiment.subjectivity, news3.title, pub, access, ' + '.join(news3.authors), news3.text)
+        this_article.output(self.output_filename) #output to files
+        self.articles.append(this_article) # add to our list
+        
+    def logerror(self, url, error):
+        f = open(err_file, "a")
+        print("URL: " + url, file=f)
+        print("Error: " + error, file=f)
+        print("", file=f)
+        f.close()
+        print(error + " logged in error file.")
 
 
+
+######## StockScraper ########
 import matplotlib.pyplot as plt
 import quandl
 import pandas
