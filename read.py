@@ -1,7 +1,6 @@
 from utility import articles_from_csv
 from utility import stocks_from_csv
 
-from portfolio import Portfolio
 from scraper import StockScraper
 
 import matplotlib.pyplot as plt
