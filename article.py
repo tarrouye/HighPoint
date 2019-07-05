@@ -2,7 +2,7 @@ import csv
 from datetime import datetime
 
 class Article:
-    def __init__(self, url = "", sentiment = None, polarity = None, subjectivity = None, title = "", pub = datetime.today(), access = datetime.today(), author = "", body = ""):
+    def __init__(self, url = "", classification = None, p_pos = None, p_neg = None, title = "", pub = datetime.today(), access = datetime.today(), author = "", body = ""):
         self.dictionary = {
             'url': url,
             'title': title,
@@ -10,9 +10,9 @@ class Article:
             'publish-date': pub,
             'access-date': access,
             'body': body,
-            'sentiment': sentiment,
-            'polarity': polarity,
-            'subjectivity': subjectivity
+            'sentiment': classification,
+            'polarity': p_pos,
+            'subjectivity': p_neg
         }
 
     def __str__(self):

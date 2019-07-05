@@ -10,6 +10,6 @@ stock = StockScraper(tesla, start = "2016-01-01", end = "2018-01-01")
 stock.scrape()
 
 # run the google scraper on the same time frame
-goog = GoogleScraper(tesla, start = "2016-01-01", end = "2018-01-01", max = 150)
+goog = GoogleScraper(tesla, start = "2016-01-01", end = "2018-01-01", max = 2450)
 goog.scrape()
 
