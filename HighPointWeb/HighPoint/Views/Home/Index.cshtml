@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<html>
+<body>
+    <div>
+        <p></p>
+        <button type="button" onclick="grabData()">Get Yo Data Here!</button>
+        <p></p>
+        <span id="dataField"></span>
+    </div>
+</body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+<script type="text/javascript">
+    function grabData() {
+        $.ajax({ url: "/api/dataList", success: fillData });
+    }
+    function fillData(x) {
+        var z = document.getElementById("dataField");
+        for (i = 0; i < x.length; i++) {
+            z.innerHTML += x[i]["url"] + "</br>";
+            z.innerHTML += x[i]["title"] + "</br>";
+            z.innerHTML += "score: " + x[i]["sentiment"] + "</br>";
+            z.innerHTML += x[i]["body"] + "</br>";
+            z.innerHTML += "</br>";
+        }
+    }
+</script>

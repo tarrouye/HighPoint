@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from textblob import TextBlob
+from sentimentweight import SentimentWeight
 
 err_file = "err.txt"
 
@@ -73,6 +74,8 @@ class Article:
 
         # analyze the body for polarity and subjectivity
         if self.parsed == True:
+            #self.analyzed = SentimentWeight(self.body).sentiment
+            #self.analyzed = SentimentWeight(self.body).weight
             textBlobObj = TextBlob(self.body)
             self.analyzed = textBlobObj.sentiment
     
