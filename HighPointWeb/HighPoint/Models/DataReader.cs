@@ -19,7 +19,7 @@ namespace HighPoint.Models
         private List<string[]> ParseFile()
         {
 
-            StreamReader s = new StreamReader(File.OpenRead("/git/HighPoint/PythonScripts/out-2018-10-22--2018-10-29.txt"));
+            StreamReader s = new StreamReader(File.OpenRead("/git/HighPoint/out.txt"));
             string temp = "";
             while (!s.EndOfStream)
             {
