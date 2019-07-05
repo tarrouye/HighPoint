@@ -10,10 +10,12 @@ import requests
 from bs4 import BeautifulSoup
 
 from textblob import TextBlob
+from textblob.sentiments import NaiveBayesAnalyzer
 
 from newspaper import Article as NewsArticle
 import nltk
 nltk.download("punkt")
+nltk.download("movie_reviews")
 
 from datetime import datetime
 
@@ -39,6 +41,8 @@ class GoogleScraper:
         self.max_articles_per_term = max # how many articles to scrape per search term
         
         self.portfolio = portfolio # the portfolio to
+        
+        self.analyzer = NaiveBayesAnalyzer()
     
         # create used_url list from file in portfolio
         self.used_urls = []
@@ -65,7 +69,7 @@ class GoogleScraper:
             
             for term in company.search_terms: # go through each search term
                 # call the google search news function and go through the urls it returns
-                for url in search_news(term + " after:" + self.search_after + " before:" + self.search_before, stop = self.max_articles_per_term): # we set it to get max articles per search term, between our two dates
+                for url in search_news(term + " after:" + self.search_after + " before:" + self.search_before, tld = 'com', lang = 'en', stop = self.max_articles_per_term): # we set it to get max articles per search term, between our two dates
                     url = url.strip(" ")
                     url = url.strip("\n") #remove extraneous leading/trailing characters in the url
                     
@@ -129,7 +133,8 @@ class GoogleScraper:
             return
         
         # TextBlob Analysis
-        textBlobObj = TextBlob(news3.text) # create textBlob object
+        textBlobObj = TextBlob(news3.text, analyzer = self.analyzer) # create textBlob object
+        #textBlobTwo = TextBlob(news3.text, analyzer = self.analyzer)
         
         # language / end
         try:
@@ -144,12 +149,13 @@ class GoogleScraper:
         # have TextBlob calculate sentiment
         try:
             sentiment = textBlobObj.sentiment
-        except:
+        except Exception as e:
+            print(e)
             self.logerror(url, "Sentiment Analysis Failed")
             return
         
         # Add to article list
-        this_article = Article(url, sentiment, sentiment.polarity, sentiment.subjectivity, news3.title, pub, access, ' + '.join(news3.authors), news3.text)
+        this_article = Article(url, sentiment.classification, sentiment.p_pos, sentiment.p_neg, news3.title, pub, access, ' + '.join(news3.authors), news3.text)
         this_article.output(self.output_filename) #output to files
         self.articles.append(this_article) # add to our list
         

@@ -19,19 +19,47 @@ stock_data_day = stocks_from_csv("out-daily-stock-idtsla-comp-Tesla-2016-01-01to
 # populate a list with the contents of the article
 data_list = []
 for article in articles:
-    data_list.append(article.dictionary)
+    dic = article.dictionary
+    
+    #we only care about the date not the time
+    dic['publish-date'] = dic['publish-date'].date()
+    
+    data_list.append(dic)
 
 # convert that list to a pandas Data Frame
 df = pandas.DataFrame(data_list)
+
 # sort the data by date
 df.sort_values(by = 'publish-date', inplace = True)
 
+grouped = df.groupby(by = 'publish-date')
+mean = grouped.mean()
+median = grouped.median()
+
 # plot our data
-plt.figure(1)
+line_type = '-'
 
-plt.plot(df['publish-date'], df['polarity'], 'b-')
-plt.plot(df['publish-date'], df['subjectivity'], 'r-')
+plt.figure(2)
 
-plt.plot(stock_data_per['Close'] * 6, 'g-')
-plt.plot(stock_data_day['Close'] / 400 - 0.5, 'm-')
+plt.plot(mean.index, mean['polarity'], 'b' + line_type, label='p_pos mean')
+plt.plot(mean.index, mean['subjectivity'], 'r' + line_type, label='p_neg mean')
+plt.legend(loc='upper left')
+
+#plt.figure(2)
+
+plt.plot(median.index, median['polarity'], 'c' + line_type, label='p_pos median')
+plt.plot(median.index, median['subjectivity'], 'y' + line_type, label='p_neg median')
+plt.legend(loc='upper left')
+
+plt.figure(3)
+
+plt.plot(stock_data_per['Close'], 'g' + line_type, label='(percent change)')
+plt.legend(loc='upper left')
+
+#plt.figure(4)
+
+#plt.plot(stock_data_day['Close'], 'm-', label = 'closing price')
+#plt.legend(loc='upper left')
+
+
 plt.show()
