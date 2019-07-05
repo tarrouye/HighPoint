@@ -1,100 +1,44 @@
-import requests
-from bs4 import BeautifulSoup
-from textblob import TextBlob
-from sentimentweight import SentimentWeight
 
-err_file = "err.txt"
+import csv
+from datetime import datetime
 
 class Article:
-    def __init__(self, url = "", parsed = False, analyzed = "False", title = "", author = "", body = ""):
-        self.url = url
-        self.title = title
-        self.author = author
-        self.body = body
-        self.parsed = parsed
-        self.analyzed = analyzed
+    def __init__(self, url = "", classification = None, p_pos = None, p_neg = None, title = "", pub = datetime.today(), access = datetime.today(), author = "", body = ""):
+        self.dictionary = {
+            'url': url,
+            'title': title,
+            'author': author,
+            'publish-date': pub,
+            'access-date': access,
+            'body': body,
+            'sentiment': classification,
+            'polarity': p_pos,
+            'subjectivity': p_neg
+        }
 
-    def parse(self):
-        paragraphtext = []
-        # get page text and parse with BFS
-        print("requesting page")
-        # catch timeout errors and other request exceptions
-        try:
-            page = requests.get(self.url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=30)
-        except requests.exceptions.RequestException as e:
-            self.logerror(str(e))
-            return
-        
-        # catch 404 errors
-        if page.status_code == 404:
-            self.logerror("404 On Request")
-            return
-            
-        soup = BeautifulSoup(page.text, 'html.parser')
-        
-        # get author name, if there's a named author
-        # currently works on MarketWatch
-        try:
-            abody = soup.find(class_='byline').find('a')
-            aname = abody.get_text()
-        except:
-            aname = 'Anonymous'
-            
-        self.author = aname
-        
-        # get article title or log error
-        try:
-            title = soup.title.get_text()
-        except:
-            title = ""
-            self.logerror("Title Not Found")
-            
-        self.title = title
-        
-        # get article text
-        try:
-            articletext = soup.find(id='article-body').find_all('p')
-        except:
-            try:
-                articletext = soup.find(class_='story-body').find_all('p')
-            except:
-                print("Could not narrow down body location")
-                articletext = soup.find_all('p')
-                
-        # combine text
-        for paragraph in articletext:
-            paragraphtext.append(paragraph.get_text())
-            
-        # combine all paragraphs into the body
-        self.body = "".join(paragraphtext)
-        self.body = " ".join(self.body.split()) #removes excessive whitespaces
-        self.parsed = True
-        
-        print("Parsed article: " + self.title)
-
-        # analyze the body for polarity and subjectivity
-        if self.parsed == True:
-            #self.analyzed = SentimentWeight(self.body).sentiment
-            #self.analyzed = SentimentWeight(self.body).weight
-            textBlobObj = TextBlob(self.body)
-            self.analyzed = textBlobObj.sentiment
-    
     def __str__(self):
-        return "URL: " + self.url + "\nParsed: " + str(self.parsed) + "\nAnalyzed: " + str(self.analyzed) + "\nTitle: " + self.title + "\nAuthor: " + self.author + "\nBody: " + self.body
-        
-    def output(self, fn):
-        if (self.parsed):
-            f = open(fn, "a")
-            print(self, file=f)
-            print("", file=f)
-            f.close()
-            print("Article saved to text file: " + self.title)
+        return ("URL: " + self.dictionary['url'] +
+            "\nSentiment: " + str(self.dictionary['sentiment']) +
+            "\nPolarity: " + str(self.dictionary['polarity']) +
+            "\nSubjectivity: " + str(self.dictionary['subjectivity']) +
+            "\nTitle: " + self.dictionary['title'] +
+            "\nPublish Date: " + str(self.dictionary['publish-date']) +
+            "\nAccess Date: " + str(self.dictionary['access-date']) +
+            "\nAuthor: " + self.dictionary['author'] +
+            "\nBody: " + self.dictionary['body'])
     
-    def logerror(self, error):
-        f = open(err_file, "a")
-        print("URL: " + self.url, file=f)
-        print("Error: " + error, file=f)
-        print("", file=f)
-        f.close()
-        print(error + " logged in error file.")
+    def output(self, fn):
+        if (file_is_empty(fn)): # if the file is empty, we must add our csv header
+            f = open(fn, "w")
+            print("URL,Sentiment,Polarity,Subjectivity,Title,Published Date,Access Date,Author,Body", file=f)
+            f.close()
         
+        writeFile = open(fn, 'a', encoding='utf-8')
+        csv.writer(writeFile).writerow([self.dictionary['url'], str(self.dictionary['sentiment']), str(self.dictionary['polarity']),
+                str(self.dictionary['subjectivity']), self.dictionary['title'], self.dictionary['publish-date'], self.dictionary['access-date'], self.dictionary['author'], self.dictionary['body']])
+                
+        writeFile.close()
+        print("Article saved to csv file: " + self.dictionary['title'])
+
+# cyclical imports ;/
+from utility import file_is_empty

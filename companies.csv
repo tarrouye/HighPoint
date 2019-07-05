@@ -1,0 +1,3 @@
+id,name,stock_symbol,search_terms,blacklist,
+tesla,Tesla,"WIKI/TSLA","Tesla, Tesla Motors, Elon Musk","teslamotorsclub.com/tmc/, bloomberg, miamiherald",
+disney,Disney,"WIKI/DIS","Disney, Walt Disney, Disneyland",
