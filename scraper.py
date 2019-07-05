@@ -31,6 +31,7 @@ from company import Company
 from portfolio import Portfolio
 
 err_file = "err.csv"
+GABE_GLOBAL_OUTPUT = "out.csv"
 
 class GoogleScraper:
     def __init__(self, portfolio = Portfolio(), start = "2019", end = "2019-09-20", max = 25):
@@ -157,6 +158,7 @@ class GoogleScraper:
         # Add to article list
         this_article = Article(url, sentiment.classification, sentiment.p_pos, sentiment.p_neg, news3.title, pub, access, ' + '.join(news3.authors), news3.text)
         this_article.output(self.output_filename) #output to files
+        this_article.output(GABE_GLOBAL_OUTPUT) # output again
         self.articles.append(this_article) # add to our list
         
     def logerror(self, url, error):
