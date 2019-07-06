@@ -22,11 +22,12 @@ def articles_from_csv(file):
     csvreader = csv.reader(readFile) # create a cvs reader object
     
     next(csvreader) # skip the header
-    for match in csvreader: # go through each row of the cvs file
-        pub = str_to_datetime(match[5]) # convert the dates back to datetime
-        acc = str_to_datetime(match[6])
-        # create the Article and add it to the list
-        articles.append(Article(match[0], match[1], float(match[2]), float(match[3]), match[4], pub, acc, match[7], match[8]))
+    for match in list(csvreader): # go through each row of the cvs file
+        if (len(match) > 8):
+            pub = str_to_datetime(match[5]) # convert the dates back to datetime
+            acc = str_to_datetime(match[6])
+            # create the Article and add it to the list
+            articles.append(Article(match[0], match[1], float(match[2]), float(match[3]), match[4], pub, acc, match[7], match[8]))
     
     readFile.close() # close the file ;)
     
