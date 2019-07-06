@@ -12,7 +12,7 @@ import csv
 # it to a list which it returns
 def articles_from_csv(file):
     try:
-        readFile = open(file, 'r')
+        readFile = open(file, 'r', encoding='utf-8')
     except:
         print("Invalid file passed to Article reader.") # try except block protects against invalid filenames
         return
@@ -36,7 +36,7 @@ def articles_from_csv(file):
 # it to a pandas DataFrame which it returns
 def stocks_from_csv(file):
     try:
-        readFile = open(file, 'r')
+        readFile = open(file, 'r', encoding='utf-8')
     except:
         print("Invalid file passed to stocks csv reader.") # try except block protects against invalid filenames
         return
@@ -50,7 +50,7 @@ def stocks_from_csv(file):
 # it to a dictionary of Company objects
 def companies_from_csv(file):
     try:
-        readFile = open(file, 'r')
+        readFile = open(file, 'r', encoding='utf-8')
     except:
         print("Invalid file passed to Company reader.") # try except block protects against invalid filenames
         return
