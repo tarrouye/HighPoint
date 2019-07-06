@@ -12,70 +12,21 @@ import os
 from os import listdir
 import sys
 
+from tkinter import *
+from tkinter.ttk import *
+
+# register matplotlib converters
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
+
+
 # -------------------------------- #
 # ---------- Functions ----------- #
 # -------------------------------- #
 
-# function to output list of files and
-# return the one the user selects
-def select_file(flist, id_):
-    print("File choices: ")
-    
-    # output file choices
-    count = 0
-    for file_name in flist:
-        print(str(count) + ": " + file_name)
-        count += 1
-            
-    # loop asking for them to pick one
-    loop2 = True
-    while (loop2):
-        ask = input("Select your " + id_ + " File: ")
-        try:
-            num = int(ask)
-            file1 = flist[num]
-            loop2 = False
-        except:
-            print("Invalid input. ")
-    
-    print()
-    print("-------------------------")
-    print()
-
-    return file1
-    
-# function to output list of companies in stock file
-# and return the files for the one the user selects
-def select_company(cfile):
-    print("Company choices: ")
-    
-    # ouput company choices
-    df = pandas.read_csv(cfile).to_dict()
-    
-    for id_ in df['company']:
-        print(str(id_) + ": " + df['company'][id_])
-    
-    # loop asking for them to pick one
-    loop2 = True
-    while (loop2):
-        ask = input("Select a company: ")
-        try:
-            num = int(ask)
-            file1 = df['percent file'][num]
-            file2 = df['daily file'][num]
-            loop2 = False
-        except:
-            print("Invalid input. ")
-    
-    print()
-    print("--------------------------")
-    print()
-    
-    return file1, file2
-
 
 # function to plot the data from the selected files
-def plot_data(article_file, percent_file, daily_file):
+def plot_data(article_file, percent_file, daily_file, line_type = '-'):
     # read in the Articles from the csv file
     articles = articles_from_csv(article_file)
     
@@ -106,8 +57,6 @@ def plot_data(article_file, percent_file, daily_file):
     median = grouped.median()
     
     # plot our data
-    line_type = '-'
-    
     plt.figure(1)
     
     plt.plot(mean.index, mean['polarity'], 'b' + line_type, label='p_pos mean')
@@ -132,9 +81,115 @@ def plot_data(article_file, percent_file, daily_file):
     
     
     plt.show()
+
+
+# ------------------------------- #
+# ------ UI APP ----------------- #
+# ------------------------------- #
+
+class App:
+
+    def __init__(self, master, alist, slist):
+        # create a frame to hold our UI
+        self.frame = Frame(master)
+        self.frame.pack()
+        
+        style = Style()
+        style.configure('TMenubutton', font = ('Futura', 14))
+        style.configure('TButton', font = ('Futura', 16))
+        style.configure('TCheckbutton', font = ('Futura', 16))
+        style.configure('TLabel', font = ('Futura', 20, 'bold'))
+        
+        sm_font = ('Futura', 12)
+        
+        
+        # create a variable to store the chosen article
+        self.article = StringVar(self.frame)
+        self.article.set(alist[0]) # default value
+
+        # create a label for this selection
+        self.article_label = Label(self.frame, text = "Article file: ", justify = LEFT, anchor = W)
+        self.article_label.grid(row = 0, sticky = 'ew')
+
+        # create a drop down menu of the article options
+        self.article_menu = OptionMenu(self.frame, self.article, alist[0], *alist)
+        self.article_menu['menu'].configure(font = sm_font)
+        self.article_menu.grid(row = 0, column = 1, sticky = 'ew')
+        
+        
+        def set_companies(*args):
+            # ouput company choices
+            self.df = pandas.read_csv(self.stock.get()).to_dict()
+            
+            clist = [ v for v in self.df['company'].values() ]
+            
+            # create a variable to store the chosen article
+            self.company = StringVar(self.frame)
+            self.company.set(clist[0]) # default value
     
+            # create a label for this selection
+            self.company_label = Label(self.frame, text = "Company: ", justify = LEFT, anchor = W)
+            self.company_label.grid(row = 2, sticky = 'ew')
     
+            # create a drop down menu of the company options
+            self.company_menu = OptionMenu(self.frame, self.company, clist[0], *clist)
+            self.company_menu['menu'].configure(font = sm_font)
+            self.company_menu.grid(row = 2, column = 1, sticky = 'ew')
+        
+        
+        # create a variable to store the chosen stock
+        self.stock = StringVar(self.frame)
+        self.stock.set(slist[0]) # default value
+        self.stock.trace("w", set_companies)
+
+        # create a label for this selection
+        self.stock_label = Label(self.frame, text = "Stocks file: ", justify = LEFT, anchor = W)
+        self.stock_label.grid(row = 1, sticky = 'ew')
+
+        # create a drop down menu of the stock options
+        self.stock_menu = OptionMenu(self.frame, self.stock, slist[0], *slist)
+        self.stock_menu['menu'].configure(font = sm_font)
+        self.stock_menu.grid(row = 1, column = 1, sticky = 'ew')
+        
+        # set default company choice
+        set_companies()
+        
+        
+        # create a variable to store the chosen plot style
+        plist = ['-', 'o']
+        
+        self.plot = StringVar(self.frame)
+        self.plot.set(plist[0]) # default value
+
+        # create a label for this selection
+        self.plot_label = Label(self.frame, text = "Plot style: ", justify = LEFT, anchor = W)
+        self.plot_label.grid(row = 3, sticky = 'ew')
+
+        # create a drop down menu of the stock options
+        self.plot_menu = OptionMenu(self.frame, self.plot, plist[0], *plist)
+        self.plot_menu['menu'].configure(font = sm_font)
+        self.plot_menu.grid(row = 3, column = 1, sticky = 'ew')
+        
+        
+        # create a button to confirm selections
+        self.graph_button = Button(self.frame, text = "GRAPH", command = self.graph)
+        self.graph_button.grid(row = 5, column = 1, sticky = 'ew', pady = 100)
+        
+        # create a button to quit the app
+        self.quit_button = Button(self.frame, text = "QUIT", command = self.frame.quit)
+        self.quit_button.grid(row = 5, column = 0, sticky = 'ew')
+        
+
+    def graph(self):
+        article_file = self.article.get()
+        company_index = [ v for v in self.df['company'].values() ].index(self.company.get())
+        percent_file = self.df['percent file'][company_index]
+        daily_file = self.df['daily file'][company_index]
+        
+        plot_data(article_file, percent_file, daily_file, self.plot.get())
     
+
+
 # ------------------------------- #
 # ----------- Script ------------ #
 # ------------------------------- #
@@ -154,24 +209,10 @@ for file_name in listdir(current_path):
         
     if (('out-id' in file_name) and file_name.endswith('.csv')): # we look for specific article files from our output
         article_files.append(file_name)
-        
-        
-# have user select article and stock files
-a_file = select_file(article_files, "Article")
-s_file = select_file(stock_files, "Stock")
 
-# read in the stock file
-p_file, d_file = select_company(s_file)
+root = Tk()
+root.geometry("1000x500")
 
-print("You have selected to analyze the following files: ")
-print("Article file: " + a_file)
-print("Percent change file: " + p_file)
-print("Daily price file: " + d_file)
-print()
-print("------------------")
-print()
-print("Graphing now")
-plot_data(a_file, p_file, d_file)
-    
-print("Exiting reader.")
-print()
+app = App(root, article_files, stock_files)
+
+root.mainloop()
